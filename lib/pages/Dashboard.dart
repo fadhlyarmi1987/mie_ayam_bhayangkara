@@ -52,91 +52,60 @@ class _DashboardCardState extends State<DashboardCard> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+Widget build(BuildContext context) {
+  final screenWidth = MediaQuery.of(context).size.width;
+  final screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 310),
-                  child: Card(
-                    color: const Color(0xFFFFEBD5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 6,
-                    child: SizedBox(
-                      height: screenHeight * 0.4,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 50),
-                        child: Column(
-                          children: [
-                            Text(
-                              'MENU MINUMAN',
-                              style: GoogleFonts.jockeyOne(fontSize: 20),
-                            ),
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(16),
-                                  bottomRight: Radius.circular(16),
-                                ),
-                                child: ListView(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 5,
-                                    top: 5,
-                                  ),
-                                  children: drinkItems.keys
-                                      .map(
-                                        (item) => ItemCard(
-                                          name: item,
-                                          items: drinkItems,
-                                          itemPrices: itemPrices,
-                                          onAdd: _increment,
-                                          onRemove: _decrement,
-                                          type: 'minuman',
-                                        ),
-                                      ) // cobaaa
-                                      .toList(),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+  final paddingSmall = screenWidth * 0.03;  // ~12px di layar kecil
+  final paddingMedium = screenWidth * 0.04; // ~20px
+  final cornerRadius = screenWidth * 0.04;  // ~16px
+  final headerFontSize = screenWidth * 0.09; // ~32px
+  final sectionFontSize = screenWidth * 0.05; // ~20px
+
+  return Column(
+    children: [
+      Expanded(
+        child: SingleChildScrollView(
+          child: Stack(
+            children: [
+              // 🍹 Card Minuman
+              Padding(
+                padding: EdgeInsets.only(top: screenHeight * 0.41),
+                child: Card(
+                  color: const Color(0xFFFFEBD5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(cornerRadius),
                   ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.only(top: 140),
-                  child: Card(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 6,
+                  elevation: 6,
+                  child: SizedBox(
+                    height: screenHeight * 0.4,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 40, bottom: 10),
+                      padding: EdgeInsets.only(top: screenHeight * 0.08),
                       child: Column(
                         children: [
                           Text(
-                            'MENU MAKANAN',
-                            style: GoogleFonts.jockeyOne(fontSize: 20),
+                            'MENU MINUMAN',
+                            style: GoogleFonts.jockeyOne(fontSize: sectionFontSize),
                           ),
-                          ...foodItems.keys.map(
-                            (item) => ItemCard(
-                              name: item,
-                              items: foodItems,
-                              itemPrices: itemPrices,
-                              onAdd: _increment,
-                              onRemove: _decrement,
-                              type: 'makanan',
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(cornerRadius),
+                                bottomRight: Radius.circular(cornerRadius),
+                              ),
+                              child: ListView(
+                                padding: EdgeInsets.symmetric(vertical: paddingSmall),
+                                children: drinkItems.keys.map(
+                                  (item) => ItemCard(
+                                    name: item,
+                                    items: drinkItems,
+                                    itemPrices: itemPrices,
+                                    onAdd: _increment,
+                                    onRemove: _decrement,
+                                    type: 'minuman',
+                                  ),
+                                ).toList(),
+                              ),
                             ),
                           ),
                         ],
@@ -144,94 +113,138 @@ class _DashboardCardState extends State<DashboardCard> {
                     ),
                   ),
                 ),
-                Container(
-                  height: screenHeight * 0.24,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color.fromARGB(255, 226, 199, 164), Color(0xFFFFEBD5)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                    borderRadius: const BorderRadius.vertical(
-                      bottom: Radius.circular(20),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 8,
-                        offset: const Offset(0, 4), // arah bayangan: bawah
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'MENU MIE AYAM\nBHAYANGKARA',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.jockeyOne(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Container(
-          height: screenHeight * 0.06,
-          width: double.infinity,
-          margin: const EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: () {
-              final selected = getSelectedItems();
-              if (selected.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Belum ada item yang dipilih!')),
-                );
-                return;
-              }
-
-              showDialog(
-                context: context,
-                builder: (_) => OrderSummaryDialog(
-                  selectedItems: selected,
-                  itemNotes: itemNotes,
-                  onNoteSaved: (itemName, note) {
-                    setState(() {
-                      itemNotes[itemName] = note;
-                    });
-                  },
-                  onConfirm: () {
-                    setState(() {
-                      foodItems.updateAll((key, value) => 0);
-                      drinkItems.updateAll((key, value) => 0);
-                      itemNotes.clear(); // Reset catatan
-                    });
-
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Pesanan dikonfirmasi!')),
-                    );
-                  },
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              padding: const EdgeInsets.symmetric(vertical: 11),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
               ),
+
+              // 🍜 Card Makanan
+              Padding(
+                padding: EdgeInsets.only(top: screenHeight * 0.19),
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(cornerRadius),
+                  ),
+                  elevation: 6,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: screenHeight * 0.06,
+                      bottom: screenHeight * 0.015,
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'MENU MAKANAN',
+                          style: GoogleFonts.jockeyOne(fontSize: sectionFontSize),
+                        ),
+                        ...foodItems.keys.map(
+                          (item) => ItemCard(
+                            name: item,
+                            items: foodItems,
+                            itemPrices: itemPrices,
+                            onAdd: _increment,
+                            onRemove: _decrement,
+                            type: 'makanan',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // 🔝 Header Gradient
+              Container(
+                height: screenHeight * 0.24,
+                padding: EdgeInsets.all(paddingMedium),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color.fromARGB(255, 226, 199, 164), Color(0xFFFFEBD5)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(cornerRadius),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'MENU MIE AYAM\nBHAYANGKARA',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.jockeyOne(
+                    fontSize: headerFontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      // ✅ Tombol Buat Pesanan
+      Container(
+        height: screenHeight * 0.065,
+        width: double.infinity,
+        margin: EdgeInsets.all(paddingMedium),
+        child: ElevatedButton(
+          onPressed: () {
+            final selected = getSelectedItems();
+            if (selected.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Belum ada item yang dipilih!')),
+              );
+              return;
+            }
+
+            showDialog(
+              context: context,
+              builder: (_) => OrderSummaryDialog(
+                selectedItems: selected,
+                itemNotes: itemNotes,
+                onNoteSaved: (itemName, note) {
+                  setState(() {
+                    itemNotes[itemName] = note;
+                  });
+                },
+                onConfirm: () {
+                  setState(() {
+                    foodItems.updateAll((key, value) => 0);
+                    drinkItems.updateAll((key, value) => 0);
+                    itemNotes.clear(); // Reset catatan
+                  });
+
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Pesanan dikonfirmasi!')),
+                  );
+                },
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            padding: EdgeInsets.symmetric(vertical: screenHeight * 0.015),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(cornerRadius * 0.75),
             ),
-            child: Text(
-              'BUAT PESANAN',
-              style: GoogleFonts.khand(fontSize: 20, color: Colors.white),
+          ),
+          child: Text(
+            'BUAT PESANAN',
+            style: GoogleFonts.khand(
+              fontSize: screenWidth * 0.05,
+              color: Colors.white,
             ),
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 }
