@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "245832683331",
+    "project_id": "mie-ayam-kasir",
+    "storage_bucket": "mie-ayam-kasir.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245832683331:android:a516e79bb8f1282af4a9f6",
+        "android_client_info": {
+          "package_name": "com.example.mie_ayam_bhayangkara"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPRyAKWj_T9GdHaxeRRAhPaWFD5Nut5Dc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
