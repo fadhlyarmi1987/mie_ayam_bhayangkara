@@ -15,78 +15,114 @@ class _AntreanPageState extends State<AntreanPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: const Color(0xFFFFEBD5),
-      body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            Text(
-              'ANTREAN',
-              style: GoogleFonts.jockeyOne(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color.fromARGB(255, 226, 199, 164), Color(0xFFFFEBD5)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                height: screenHeight * 0.1,
+                width: screenWidth * 1,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 226, 199, 164),
+                      Color(0xFFFFEBD5),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(20),
+                  ),
+                  boxShadow: [
+                      BoxShadow(
+                        color: Color.fromARGB(42, 0, 0, 0),
+                        spreadRadius: 0.1,
+                        blurRadius: 5,
+                        offset: const Offset(0, 6), // arah bayangan: bawah
+                      ),
+                    ],
+                ),
+                child: Center(
+                  child: Text(
+                    'ANTREAN',
+                    style: GoogleFonts.jockeyOne(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('pesanan')
-                    .where(
-                      'status',
-                      isEqualTo: 'a',
-                    ) // ✅ Tampilkan hanya status 'a'
-                    .orderBy('id', descending: false)
-                    .snapshots(),
+              const SizedBox(height: 16),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('pesanan')
+                      .where(
+                        'status',
+                        isEqualTo: 'a',
+                      ) // ✅ Tampilkan hanya status 'a'
+                      .orderBy('id', descending: false)
+                      .snapshots(),
 
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text('Tidak ada antrean'));
-                  }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return  Center(child: Text('Tidak ada antrean', style: GoogleFonts.jockeyOne(),));
+                    }
 
-                  final pesananList = snapshot.data!.docs;
+                    final pesananList = snapshot.data!.docs;
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: pesananList.length,
-                    itemBuilder: (context, index) {
-                      final data = pesananList[index];
-                      final docId = data.id;
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: pesananList.length,
+                      itemBuilder: (context, index) {
+                        final data = pesananList[index];
+                        final docId = data.id;
 
-                      // Jika sudah dibayar, jangan tampilkan
-                      if (selesaiBayarIds.contains(docId)) {
-                        return const SizedBox.shrink();
-                      }
+                        // Jika sudah dibayar, jangan tampilkan
+                        if (selesaiBayarIds.contains(docId)) {
+                          return const SizedBox.shrink();
+                        }
 
-                      final nomor = data['id'].toString();
-                      final List<Map<String, dynamic>> items =
-                          (data['items'] as List<dynamic>)
-                              .map((item) => Map<String, dynamic>.from(item))
-                              .toList();
-                      final total = data['total_harga'] ?? 0;
-                      final ciriPembeli = data['ciri_pembeli'] ?? '';
+                        final nomor = data['id'].toString();
+                        final List<Map<String, dynamic>> items =
+                            (data['items'] as List<dynamic>)
+                                .map((item) => Map<String, dynamic>.from(item))
+                                .toList();
+                        final total = data['total_harga'] ?? 0;
+                        final ciriPembeli = data['ciri_pembeli'] ?? '';
 
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: _buildOrderCard(
-                          nomor,
-                          items,
-                          total,
-                          docId,
-                          ciriPembeli,
-                        ),
-                      );
-                    },
-                  );
-                },
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildOrderCard(
+                            nomor,
+                            items,
+                            total,
+                            docId,
+                            ciriPembeli,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

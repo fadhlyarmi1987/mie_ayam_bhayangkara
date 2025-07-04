@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../widgets/item_card.dart';
 import '../widgets/order_summary_dialog.dart';
 import '../utils/item_data.dart';
-//coba
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -29,7 +28,7 @@ class DashboardCard extends StatefulWidget {
 class _DashboardCardState extends State<DashboardCard> {
   final Map<String, int> foodItems = {...initialFoodItems};
   final Map<String, int> drinkItems = {...initialDrinkItems};
-  final Map<String, String> itemNotes = {}; // ⬅️ Catatan per item
+  final Map<String, String> itemNotes = {};
 
   void _increment(String key, Map<String, int> items) {
     setState(() {
@@ -54,6 +53,9 @@ class _DashboardCardState extends State<DashboardCard> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Column(
       children: [
         Expanded(
@@ -69,7 +71,7 @@ class _DashboardCardState extends State<DashboardCard> {
                     ),
                     elevation: 6,
                     child: SizedBox(
-                      height: 300,
+                      height: screenHeight * 0.4,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 50),
                         child: Column(
@@ -99,7 +101,7 @@ class _DashboardCardState extends State<DashboardCard> {
                                           onRemove: _decrement,
                                           type: 'minuman',
                                         ),
-                                      )// cobaaa
+                                      ) // cobaaa
                                       .toList(),
                                 ),
                               ),
@@ -143,10 +145,14 @@ class _DashboardCardState extends State<DashboardCard> {
                   ),
                 ),
                 Container(
-                  height: 180,
+                  height: screenHeight * 0.24,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFEBD5),
+                    gradient: LinearGradient(
+                      colors: [Color.fromARGB(255, 226, 199, 164), Color(0xFFFFEBD5)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                     borderRadius: const BorderRadius.vertical(
                       bottom: Radius.circular(20),
                     ),
@@ -174,7 +180,7 @@ class _DashboardCardState extends State<DashboardCard> {
           ),
         ),
         Container(
-          height: 45,
+          height: screenHeight * 0.06,
           width: double.infinity,
           margin: const EdgeInsets.all(16),
           child: ElevatedButton(
