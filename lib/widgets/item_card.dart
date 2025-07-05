@@ -1,6 +1,3 @@
-
-
-// lib/widgets/item_card.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -12,7 +9,6 @@ class ItemCard extends StatelessWidget {
   final void Function(String, Map<String, int>) onRemove;
   final String type; // 'makanan' atau 'minuman'
 
-
   const ItemCard({
     super.key,
     required this.name,
@@ -21,14 +17,12 @@ class ItemCard extends StatelessWidget {
     required this.onAdd,
     required this.onRemove,
     required this.type,
-
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: type == 'makanan' ? Color(0xFFFFEBD5) : Colors.white,
-
+      color: type == 'makanan' ? const Color(0xFFFFEBD5) : Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 1,
       child: SizedBox(
@@ -41,11 +35,22 @@ class ItemCard extends StatelessWidget {
               Text(name, style: GoogleFonts.jockeyOne(fontSize: 20)),
               Row(
                 children: [
-                  _roundButton(Icons.remove, () => onRemove(name, items)),
+                  _roundButton(
+                    icon: Icons.remove,
+                    onPressed: () => onRemove(name, items),
+                    backgroundColor: const Color.fromARGB(255, 255, 111, 100),
+                  ),
                   const SizedBox(width: 8),
-                  Text(items[name].toString(), style: const TextStyle(fontSize: 16)),
+                  Text(
+                    items[name].toString(),
+                    style: const TextStyle(fontSize: 16),
+                  ),
                   const SizedBox(width: 8),
-                  _roundButton(Icons.add, () => onAdd(name, items)),
+                  _roundButton(
+                    icon: Icons.add,
+                    onPressed: () => onAdd(name, items),
+                    backgroundColor: const Color.fromARGB(255, 106, 182, 109),
+                  ),
                 ],
               ),
             ],
@@ -55,7 +60,11 @@ class ItemCard extends StatelessWidget {
     );
   }
 
-  Widget _roundButton(IconData icon, VoidCallback onPressed) {
+  Widget _roundButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required Color backgroundColor,
+  }) {
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(100),
@@ -63,13 +72,18 @@ class ItemCard extends StatelessWidget {
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: backgroundColor,
           shape: BoxShape.circle,
           boxShadow: [
-            BoxShadow(color: Colors.grey.withOpacity(0.4), blurRadius: 4, offset: const Offset(0, 2)),
+            BoxShadow(
+              color: backgroundColor.withOpacity(0.4),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
-        child: Icon(icon, size: 18),
+        alignment: Alignment.center,
+        child: Icon(icon, size: 18, color: Colors.white),
       ),
     );
   }

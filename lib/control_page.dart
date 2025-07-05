@@ -43,10 +43,14 @@ class _ControlPageState extends State<ControlPage> {
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
+      
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        backgroundColor: const Color(0xFFFFEBD5), // krem
+      selectedItemColor: Colors.green[800], // warna teks/icon terpilih
+      unselectedItemColor: Colors.black54,   // warna teks/icon tidak terpilih
          items: const [
       BottomNavigationBarItem(
         icon: Icon(Icons.home),

@@ -72,7 +72,7 @@ class _LaporanPageState extends State<LaporanPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 226, 199, 164), Color(0xFFFFEBD5)],
+            colors: [Color.fromARGB(255, 226, 199, 164), Color.fromARGB(255, 230, 202, 172)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

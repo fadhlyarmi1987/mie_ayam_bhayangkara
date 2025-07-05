@@ -47,7 +47,7 @@ class _AntreanPageState extends State<AntreanPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 226, 199, 164), Color(0xFFFFEBD5)],
+            colors: [Color.fromARGB(255, 226, 199, 164), Color.fromARGB(255, 230, 202, 172)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -89,7 +89,7 @@ class _AntreanPageState extends State<AntreanPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              //const SizedBox(height: 16),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -134,7 +134,7 @@ class _AntreanPageState extends State<AntreanPage> {
                         final ciriPembeli = data['ciri_pembeli'] ?? '';
 
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.only(bottom: 10),
                           child: _buildDismissibleCard(
                             docId,
                             _buildOrderCard(
@@ -159,8 +159,10 @@ class _AntreanPageState extends State<AntreanPage> {
   }
 
   Widget _buildDismissibleCard(String docId, Widget child) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
+      padding: EdgeInsets.only(top: screenHeight * 0.001),
       child: Dismissible(
         key: Key(docId),
         direction: DismissDirection.endToStart,
@@ -261,8 +263,8 @@ class _AntreanPageState extends State<AntreanPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Text(
-              orderNumber,
+            child: Text("# $orderNumber",
+          
               style: GoogleFonts.jockeyOne(
                 fontWeight: FontWeight.bold,
                 fontSize: 25,
