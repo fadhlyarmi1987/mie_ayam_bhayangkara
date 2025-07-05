@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,11 +13,36 @@ class AntreanPage extends StatefulWidget {
 class _AntreanPageState extends State<AntreanPage> {
   final Set<String> selesaiMasakIds = {};
   final Set<String> selesaiBayarIds = {};
+  Timer? _refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final now = DateTime.now();
+
+    DateTime batasWaktu = DateTime(now.year, now.month, now.day, 6);
+    if (now.isBefore(batasWaktu)) {
+      batasWaktu = batasWaktu.subtract(const Duration(days: 1));
+    }
+    final timestampStart = Timestamp.fromDate(batasWaktu);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -31,7 +57,7 @@ class _AntreanPageState extends State<AntreanPage> {
             children: [
               Container(
                 height: screenHeight * 0.1,
-                width: screenWidth * 1,
+                width: screenWidth,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -41,17 +67,17 @@ class _AntreanPageState extends State<AntreanPage> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
-                  borderRadius: const BorderRadius.vertical(
+                  borderRadius: BorderRadius.vertical(
                     bottom: Radius.circular(20),
                   ),
                   boxShadow: [
-                      BoxShadow(
-                        color: Color.fromARGB(42, 0, 0, 0),
-                        spreadRadius: 0.1,
-                        blurRadius: 5,
-                        offset: const Offset(0, 6), // arah bayangan: bawah
-                      ),
-                    ],
+                    BoxShadow(
+                      color: Color.fromARGB(42, 0, 0, 0),
+                      spreadRadius: 0.1,
+                      blurRadius: 5,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: Center(
                   child: Text(
@@ -68,20 +94,22 @@ class _AntreanPageState extends State<AntreanPage> {
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('pesanan')
-                      .where(
-                        'status',
-                        isEqualTo: 'a',
-                      ) // ✅ Tampilkan hanya status 'a'
-                      .orderBy('id', descending: false)
+                      .where('status', isEqualTo: 'a')
+                      .where('tanggal', isGreaterThanOrEqualTo: timestampStart)
+                      .orderBy('tanggal')
                       .snapshots(),
-
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     }
 
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return  Center(child: Text('Tidak ada antrean', style: GoogleFonts.jockeyOne(),));
+                      return Center(
+                        child: Text(
+                          'Tidak ada antrean',
+                          style: GoogleFonts.jockeyOne(),
+                        ),
+                      );
                     }
 
                     final pesananList = snapshot.data!.docs;
@@ -93,7 +121,6 @@ class _AntreanPageState extends State<AntreanPage> {
                         final data = pesananList[index];
                         final docId = data.id;
 
-                        // Jika sudah dibayar, jangan tampilkan
                         if (selesaiBayarIds.contains(docId)) {
                           return const SizedBox.shrink();
                         }
@@ -108,12 +135,15 @@ class _AntreanPageState extends State<AntreanPage> {
 
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 16),
-                          child: _buildOrderCard(
-                            nomor,
-                            items,
-                            total,
+                          child: _buildDismissibleCard(
                             docId,
-                            ciriPembeli,
+                            _buildOrderCard(
+                              nomor,
+                              items,
+                              total,
+                              docId,
+                              ciriPembeli,
+                            ),
                           ),
                         );
                       },
@@ -122,6 +152,87 @@ class _AntreanPageState extends State<AntreanPage> {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDismissibleCard(String docId, Widget child) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: Dismissible(
+        key: Key(docId),
+        direction: DismissDirection.endToStart,
+        resizeDuration: const Duration(milliseconds: 300),
+        movementDuration: const Duration(milliseconds: 300),
+        dismissThresholds: const {DismissDirection.endToStart: 0.3},
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 20),
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+
+        //
+        confirmDismiss: (direction) async {
+          return await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: const Color(0xFFFFEBD5), // Warna krem
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: const Text(
+                'Konfirmasi',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              content: const Text(
+                'Apakah anda ingin menghapus pesdanan?',
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+              actionsPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Batal'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text(
+                    'Hapus',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+        onDismissed: (direction) async {
+          await FirebaseFirestore.instance
+              .collection('pesanan')
+              .doc(docId)
+              .delete();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Pesanan berhasil dihapus')),
+          );
+        },
+        child: Material(
+          borderRadius: BorderRadius.circular(16),
+          elevation: 2,
+          color: Colors.transparent,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: child,
           ),
         ),
       ),

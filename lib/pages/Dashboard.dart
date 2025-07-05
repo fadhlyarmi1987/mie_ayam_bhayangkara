@@ -56,7 +56,7 @@ Widget build(BuildContext context) {
   final screenWidth = MediaQuery.of(context).size.width;
   final screenHeight = MediaQuery.of(context).size.height;
 
-  final paddingSmall = screenWidth * 0.03;  // ~12px di layar kecil
+  final paddingSmall = screenWidth * 0.02;  // ~12px di layar kecil
   final paddingMedium = screenWidth * 0.04; // ~20px
   final cornerRadius = screenWidth * 0.04;  // ~16px
   final headerFontSize = screenWidth * 0.09; // ~32px
@@ -70,22 +70,25 @@ Widget build(BuildContext context) {
             children: [
               // 🍹 Card Minuman
               Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.41),
+                padding: EdgeInsets.only(top: screenHeight * 0.0325),
                 child: Card(
-                  color: const Color(0xFFFFEBD5),
+                  color: Color(0xFFFFEBD5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(cornerRadius),
                   ),
                   elevation: 6,
                   child: SizedBox(
-                    height: screenHeight * 0.4,
+                    height: screenHeight * 0.78,
                     child: Padding(
-                      padding: EdgeInsets.only(top: screenHeight * 0.08),
+                      padding: EdgeInsets.only(top: screenHeight * 0.45),
                       child: Column(
                         children: [
-                          Text(
-                            'MENU MINUMAN',
-                            style: GoogleFonts.jockeyOne(fontSize: sectionFontSize),
+                          Padding(
+                            padding: EdgeInsets.only(bottom: screenHeight * 0.005),
+                            child: Text(
+                              'MENU MINUMAN',
+                              style: GoogleFonts.jockeyOne(fontSize: sectionFontSize),
+                            ),
                           ),
                           Expanded(
                             child: ClipRRect(
@@ -94,7 +97,7 @@ Widget build(BuildContext context) {
                                 bottomRight: Radius.circular(cornerRadius),
                               ),
                               child: ListView(
-                                padding: EdgeInsets.symmetric(vertical: paddingSmall),
+                               padding: EdgeInsets.only(top: screenHeight *0),
                                 children: drinkItems.keys.map(
                                   (item) => ItemCard(
                                     name: item,
@@ -115,48 +118,52 @@ Widget build(BuildContext context) {
                 ),
               ),
 
-              // 🍜 Card Makanan
+              //🍜 Card Makanan
               Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.19),
+                padding: EdgeInsets.only(top: screenHeight * 0.0325),
                 child: Card(
-                  color: Colors.white,
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(cornerRadius),
                   ),
                   elevation: 6,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: screenHeight * 0.06,
-                      bottom: screenHeight * 0.015,
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'MENU MAKANAN',
-                          style: GoogleFonts.jockeyOne(fontSize: sectionFontSize),
-                        ),
-                        ...foodItems.keys.map(
-                          (item) => ItemCard(
-                            name: item,
-                            items: foodItems,
-                            itemPrices: itemPrices,
-                            onAdd: _increment,
-                            onRemove: _decrement,
-                            type: 'makanan',
+                  child: SizedBox(
+                    height: screenHeight * 0.435,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: screenHeight * 0.20,
+                        bottom: screenHeight * 0.015,
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'MENU MAKANAN',
+                            style: GoogleFonts.jockeyOne(fontSize: sectionFontSize),
                           ),
-                        ),
-                      ],
+                          ...foodItems.keys.map(
+                            (item) => ItemCard(
+                              name: item,
+                              items: foodItems,
+                              itemPrices: itemPrices,
+                              onAdd: _increment,
+                              onRemove: _decrement,
+                              type: 'makanan',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
 
-              // 🔝 Header Gradient
+              //🔝 Header Gradient
               Container(
-                height: screenHeight * 0.24,
+                height: screenHeight * 0.225,
                 padding: EdgeInsets.all(paddingMedium),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
+                    
                     colors: [Color.fromARGB(255, 226, 199, 164), Color(0xFFFFEBD5)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -198,7 +205,7 @@ Widget build(BuildContext context) {
             final selected = getSelectedItems();
             if (selected.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Belum ada item yang dipilih!')),
+                const SnackBar(content: Text('Belum ada item yang dipilih!',)),
               );
               return;
             }

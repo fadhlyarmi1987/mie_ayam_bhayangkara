@@ -125,35 +125,195 @@ class _LaporanPageState extends State<LaporanPage> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: filterOptions.map((option) {
-                      final isSelected = option == selectedFilter;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              selectedFilter = option;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isSelected
-                                ? Colors.green
-                                : Colors.grey[300],
-                            foregroundColor: isSelected
-                                ? Colors.white
-                                : Colors.black,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
+                    children: [
+                      ...filterOptions.map((option) {
+                        final isSelected = option == selectedFilter;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedFilter = option;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSelected
+                                  ? Colors.green
+                                  : Colors.grey[300],
+                              foregroundColor: isSelected
+                                  ? Colors.white
+                                  : Colors.black,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                            child: Text(option),
+                          ),
+                        );
+                      }),
+                      // 🔴 Tombol Hapus Data di sebelah kanan
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        child: InkWell(
+                          onTap: () async {
+                            final TextEditingController controller =
+                                TextEditingController();
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                backgroundColor: const Color(
+                                  0xFFFFEBD5,
+                                ), // Warna krem
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                title: Center(
+                                  child: Text(
+                                    'Konfirmasi Penghapusan',
+                                    style: GoogleFonts.jockeyOne(fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Ketik "hapus" untuk menghapus seluruh riwayat pesanan:',
+                                      style: GoogleFonts.jockeyOne(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextField(
+                                      controller: controller,
+                                      decoration: InputDecoration(
+                                        hintText: 'ketik hapus',
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actionsPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
+                                    child: const Text('Batal'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (controller.text
+                                              .trim()
+                                              .toLowerCase() ==
+                                          'hapus') {
+                                        Navigator.pop(context, true);
+                                      } else {
+                                        Navigator.pop(context, false);
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Teks tidak sesuai, penghapusan dibatalkan.',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: const Text('Konfirmasi'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirm == true) {
+                              try {
+                                final snapshot = await FirebaseFirestore
+                                    .instance
+                                    .collection('pesanan')
+                                    .where(
+                                      'tanggal',
+                                      isGreaterThanOrEqualTo:
+                                          Timestamp.fromDate(
+                                            getFilterRange()['range']!.start,
+                                          ),
+                                    )
+                                    .where(
+                                      'tanggal',
+                                      isLessThan: Timestamp.fromDate(
+                                        getFilterRange()['range']!.end,
+                                      ),
+                                    )
+                                    .get();
+
+                                final batch = FirebaseFirestore.instance
+                                    .batch();
+                                for (var doc in snapshot.docs) {
+                                  batch.delete(doc.reference);
+                                }
+                                await batch.commit();
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Data berhasil dihapus'),
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Gagal menghapus data: $e'),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 9,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Row(
+                              children: const [
+                                Icon(Icons.delete, color: Colors.white),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Hapus Data',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Text(option),
                         ),
-                      );
-                    }).toList(),
+                      ),
+                    ],
                   ),
                 ),
               ),
