@@ -130,7 +130,7 @@ class _DashboardCardState extends State<DashboardCard> {
                 Padding(
                   padding: EdgeInsets.only(top: screenHeight * 0.0325),
                   child: Card(
-                    color: const Color.fromARGB(255, 250, 237, 237),
+                    color: const Color.fromARGB(255, 255, 250, 250),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(cornerRadius),
                     ),

@@ -9,6 +9,7 @@ final Map<String, int> initialDrinkItems = {
   'Teh Anget': 0,
   'Es Jeruk': 0,
   'Jeruk Anget': 0,
+  'Kopi' : 0,
 };
 
 final Map<String, int> itemPrices = {
@@ -18,5 +19,6 @@ final Map<String, int> itemPrices = {
   'Teh Anget': 3000,
   'Es Jeruk': 4000,
   'Jeruk Anget': 4000,
+  'Kopi' : 4000,
 };
 

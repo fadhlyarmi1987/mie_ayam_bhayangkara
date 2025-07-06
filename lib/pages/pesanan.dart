@@ -47,7 +47,10 @@ class _AntreanPageState extends State<AntreanPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 226, 199, 164), Color.fromARGB(255, 230, 202, 172)],
+            colors: [
+              Color.fromARGB(255, 226, 199, 164),
+              Color.fromARGB(255, 230, 202, 172),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -89,7 +92,6 @@ class _AntreanPageState extends State<AntreanPage> {
                   ),
                 ),
               ),
-              //const SizedBox(height: 16),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -135,9 +137,9 @@ class _AntreanPageState extends State<AntreanPage> {
 
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 10),
-                          child: _buildDismissibleCard(
-                            docId,
-                            _buildOrderCard(
+                          child: SwipeableCard(
+                            onDelete: () => _showKonfirmasiHapusDialog(docId),
+                            child: _buildOrderCard(
                               nomor,
                               items,
                               total,
@@ -152,89 +154,6 @@ class _AntreanPageState extends State<AntreanPage> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDismissibleCard(String docId, Widget child) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    return Padding(
-      padding: EdgeInsets.only(top: screenHeight * 0.001),
-      child: Dismissible(
-        key: Key(docId),
-        direction: DismissDirection.endToStart,
-        resizeDuration: const Duration(milliseconds: 300),
-        movementDuration: const Duration(milliseconds: 300),
-        dismissThresholds: const {DismissDirection.endToStart: 0.3},
-        background: Container(
-          alignment: Alignment.centerRight,
-          padding: const EdgeInsets.only(right: 20),
-          decoration: BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Icon(Icons.delete, color: Colors.white),
-        ),
-
-        //
-        confirmDismiss: (direction) async {
-          return await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              backgroundColor: const Color(0xFFFFEBD5), // Warna krem
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: const Text(
-                'Konfirmasi',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              content: const Text(
-                'Apakah anda ingin menghapus pesdanan?',
-                style: TextStyle(fontSize: 16, color: Colors.black87),
-              ),
-              actionsPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Batal'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text(
-                    'Hapus',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-        onDismissed: (direction) async {
-          await FirebaseFirestore.instance
-              .collection('pesanan')
-              .doc(docId)
-              .delete();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Pesanan berhasil dihapus')),
-          );
-        },
-        child: Material(
-          borderRadius: BorderRadius.circular(16),
-          elevation: 2,
-          color: Colors.transparent,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: child,
           ),
         ),
       ),
@@ -263,8 +182,9 @@ class _AntreanPageState extends State<AntreanPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Text("# $orderNumber",
-          
+            child: Text(
+              "# $orderNumber",
+
               style: GoogleFonts.jockeyOne(
                 fontWeight: FontWeight.bold,
                 fontSize: 25,
@@ -491,9 +411,11 @@ class _AntreanPageState extends State<AntreanPage> {
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFFFFEBD5), // Warna krem
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Konfirmasi',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+        title: Center(
+          child: const Text(
+            'Konfirmasi',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+          ),
         ),
         content: const Text(
           'Apakah pesanan ini sudah dibayar dan ingin dihapus dari tampilan?',
@@ -584,6 +506,65 @@ class _AntreanPageState extends State<AntreanPage> {
               setState(() {}); // refresh tampilan setelah update
             },
             child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+}
+
+class SwipeableCard extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onDelete;
+
+  const SwipeableCard({super.key, required this.child, required this.onDelete});
+
+  @override
+  State<SwipeableCard> createState() => _SwipeableCardState();
+}
+
+class _SwipeableCardState extends State<SwipeableCard> {
+  double _offsetX = 0;
+  final double _maxSlide = 80;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onHorizontalDragUpdate: (details) {
+        setState(() {
+          _offsetX += details.delta.dx;
+          if (_offsetX < -_maxSlide) _offsetX = -_maxSlide;
+          if (_offsetX > 0) _offsetX = 0;
+        });
+      },
+      onHorizontalDragEnd: (_) {
+        setState(() {
+          _offsetX = (_offsetX < -_maxSlide / 2) ? -_maxSlide : 0;
+        });
+      },
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: widget.onDelete,
+              child: Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.white),
+                  onPressed: widget.onDelete,
+                ),
+              ),
+            ),
+          ),
+          Transform.translate(
+            offset: Offset(_offsetX, 0),
+            child: widget.child,
           ),
         ],
       ),

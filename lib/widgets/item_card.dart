@@ -22,7 +22,7 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: type == 'makanan' ? const Color(0xFFFFEBD5) : Colors.white,
+      color: type == 'makanan' ? const Color(0xFFFFEBD5) : Color.fromARGB(255, 255, 250, 250),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 1,
       child: SizedBox(
