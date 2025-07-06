@@ -72,7 +72,10 @@ class _LaporanPageState extends State<LaporanPage> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 226, 199, 164), Color.fromARGB(255, 230, 202, 172)],
+            colors: [
+              Color.fromARGB(255, 226, 199, 164),
+              Color.fromARGB(255, 230, 202, 172),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -174,7 +177,10 @@ class _LaporanPageState extends State<LaporanPage> {
                                 title: Center(
                                   child: Text(
                                     'Konfirmasi Penghapusan',
-                                    style: GoogleFonts.jockeyOne(fontSize: 20, fontWeight: FontWeight.bold),
+                                    style: GoogleFonts.jockeyOne(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                                 content: Column(
@@ -355,37 +361,67 @@ class _LaporanPageState extends State<LaporanPage> {
                               final id = doc['id'];
                               final items = doc['items'] as List<dynamic>;
                               final totalHarga = doc['total_harga'];
+                              final ciripembeli = doc['ciri_pembeli'];
                               final tanggal = doc['tanggal'] as Timestamp;
 
                               return Card(
+                                elevation: 6, // 👈 tambahkan shadow di sini
+                                shadowColor: const Color.fromARGB(
+                                  173,
+                                  0,
+                                  0,
+                                  0,
+                                ), // opsional, default: black
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 color: const Color(0xFFFFEBD5),
                                 margin: const EdgeInsets.only(bottom: 16),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    dividerColor: Colors
+                                        .transparent, // Hilangkan garis default
+                                  ),
+                                  child: ExpansionTile(
+                                    tilePadding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                    childrenPadding: const EdgeInsets.all(16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    title: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Pesanan #$id',
+                                          style: GoogleFonts.jockeyOne(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Ciri Pembeli : \n${(ciripembeli == null || ciripembeli.toString().trim().isEmpty) ? "-" : ciripembeli}',
+                                          style: GoogleFonts.jockeyOne(
+                                            fontSize: 14,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          DateFormat(
+                                            'dd MMM yyyy, HH:mm',
+                                          ).format(tanggal.toDate()),
+                                          style: const TextStyle(
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                     children: [
-                                      Text(
-                                        'Pesanan #$id',
-                                        style: GoogleFonts.jockeyOne(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        DateFormat(
-                                          'dd MMM yyyy, HH:mm',
-                                        ).format(tanggal.toDate()),
-                                        style: const TextStyle(
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                      const Divider(height: 20, thickness: 1),
+                                      const Divider(thickness: 1),
                                       ...items.map((item) {
                                         final nama = item['nama'];
                                         final jumlah = item['jumlah'];
@@ -393,19 +429,38 @@ class _LaporanPageState extends State<LaporanPage> {
 
                                         return Padding(
                                           padding: const EdgeInsets.only(
-                                            bottom: 8.0,
+                                            bottom: 2.0,
                                           ),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                '$nama x $jumlah',
-                                                style: GoogleFonts.jockeyOne(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    nama,
+                                                    style:
+                                                        GoogleFonts.jockeyOne(
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                  ),
+                                                  Text(
+                                                    'x $jumlah',
+                                                    style:
+                                                        GoogleFonts.jockeyOne(
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                  ),
+                                                ],
                                               ),
+
                                               if (catatan != null &&
                                                   catatan.toString().isNotEmpty)
                                                 Column(
@@ -413,9 +468,9 @@ class _LaporanPageState extends State<LaporanPage> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     const SizedBox(height: 4),
-                                                    Text(
+                                                    const Text(
                                                       'Catatan:',
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                         fontSize: 12,
                                                         color: Colors.black,
                                                       ),
@@ -433,6 +488,7 @@ class _LaporanPageState extends State<LaporanPage> {
                                           ),
                                         );
                                       }).toList(),
+                                      const Divider(thickness: 1),
                                       Text(
                                         'Total Harga: Rp ${NumberFormat('#,###', 'id_ID').format(totalHarga)}',
                                         style: GoogleFonts.jockeyOne(

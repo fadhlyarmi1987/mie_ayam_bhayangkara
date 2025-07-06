@@ -212,7 +212,7 @@ class _DashboardCardState extends State<DashboardCard> {
                       if (selected.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Belum ada item yang dipilih!'),
+                            content: Text('Belum ada item yang dipilih!'), backgroundColor: Colors.deepOrangeAccent,
                           ),
                         );
                         return;

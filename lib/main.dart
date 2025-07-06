@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const ControlPage(),
-        '/pesanan' : (context) => AntreanPage(),
       },
     );
   }
