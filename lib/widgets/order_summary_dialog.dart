@@ -27,6 +27,9 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
   final Map<String, TextEditingController> _controllers = {};
   final TextEditingController buyerDescriptionController =
       TextEditingController();
+  final TextEditingController menuDescriptionController =
+      TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -48,24 +51,21 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return GestureDetector(
-    behavior: HitTestBehavior.opaque,
-    onTap: () {
-      FocusScope.of(context).unfocus(); // Untuk menutup keyboard jika tap di luar
-    },
-    child: BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Dialog(
-        insetPadding: const EdgeInsets.all(16), // agar tidak menabrak layar
+        insetPadding: const EdgeInsets.all(16), // biar nggak kepotong
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: const Color(0xFFFDEBD0),
-        child: Material( // Tambahkan Material agar text selection bekerja
+        child: Material(
+          // Penting: membungkus child agar gesture-nya proper
           color: Colors.transparent,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(), // cegah overscroll
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,10 +80,13 @@ Widget build(BuildContext context) {
                     ),
                   ),
                   const SizedBox(height: 20),
+
+                  // ✏️ List item + catatan
                   ...widget.selectedItems.map((item) {
                     final parts = item.split(':');
                     final name = parts[0];
                     final qty = parts[1].trim();
+
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Column(
@@ -110,31 +113,35 @@ Widget build(BuildContext context) {
                           const SizedBox(height: 8),
                           TextField(
                             controller: _controllers[name],
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
+                            onChanged: (val) {
+                              widget.onNoteSaved(name, val);
+                            },
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.done,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            enableInteractiveSelection: true,
+                            onTap: () {
+                              final selection = _controllers[name]!.selection;
+                              _controllers[name]!.selection =
+                                  TextSelection.collapsed(
+                                    offset: selection.extentOffset,
+                                  );
+                            },
                             decoration: InputDecoration(
                               hintText: 'Tambahkan catatan...',
                               filled: true,
                               fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 12,
-                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: Colors.grey.shade400,
-                                ),
                               ),
                             ),
-                            onChanged: (val) {
-                              widget.onNoteSaved(name, val);
-                            },
                           ),
                         ],
                       ),
                     );
                   }).toList(),
+
                   const SizedBox(height: 20),
                   Text(
                     'Ciri-ciri Pembeli:',
@@ -146,7 +153,19 @@ Widget build(BuildContext context) {
                   const SizedBox(height: 6),
                   TextField(
                     controller: buyerDescriptionController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
                     maxLines: 2,
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    enableInteractiveSelection: true,
+                    onTap: () {
+                      final selection = buyerDescriptionController.selection;
+                      buyerDescriptionController.selection =
+                          TextSelection.collapsed(
+                            offset: selection.extentOffset,
+                          );
+                    },
                     decoration: InputDecoration(
                       hintText: 'Masukkan Ciri-ciri Pembeli',
                       filled: true,
@@ -161,6 +180,7 @@ Widget build(BuildContext context) {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 24),
                   Center(
                     child: ElevatedButton(
@@ -190,10 +210,8 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   void showConfirmationDialog() {
     showDialog(
@@ -337,7 +355,7 @@ Widget build(BuildContext context) {
                               'id': nextId,
                               'ciri_pembeli': buyerDescriptionController.text
                                   .trim(),
-                              'status' : 'a'
+                              'status': 'a',
                             });
 
                         Navigator.of(context).pop();
