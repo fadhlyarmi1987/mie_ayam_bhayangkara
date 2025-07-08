@@ -42,21 +42,27 @@ class _ControlPageState extends State<ControlPage> {
     });
   }
 
-  void _startMonitoringConnection() {
-    Connectivity().onConnectivityChanged.listen((_) async {
-      final hasInternet = await InternetConnectionChecker.instance.hasConnection;
+  void _startMonitoringConnection() async {
+  // Cek status awal koneksi (jangan munculkan notifikasi apapun di sini)
+  final initialStatus = await InternetConnectionChecker.instance.hasConnection;
+  _wasOffline = !initialStatus;
 
-      if (!hasInternet) {
-        // Offline
+  Connectivity().onConnectivityChanged.listen((_) async {
+    final hasInternet = await InternetConnectionChecker.instance.hasConnection;
+
+    if (!hasInternet) {
+      // Offline
+      setState(() {
+        _bottomMessage = 'Tidak terhubung ke internet';
+        _bottomColor = Colors.red;
+        _showNotification = true;
+        _wasOffline = true;
+      });
+    } else {
+      // Online, hanya tampilkan jika sebelumnya offline
+      if (_wasOffline) {
         setState(() {
-          _bottomMessage = '❌ Tidak terhubung ke internet';
-          _bottomColor = Colors.red;
-          _showNotification = true;
-        });
-      } else {
-        // Online → tampilkan 2 detik, lalu hilangkan
-        setState(() {
-          _bottomMessage = '✅ Anda kembali online';
+          _bottomMessage = 'Anda kembali online';
           _bottomColor = Colors.green;
           _showNotification = true;
         });
@@ -68,9 +74,13 @@ class _ControlPageState extends State<ControlPage> {
             });
           }
         });
+
+        _wasOffline = false; // update status
       }
-    });
-  }
+    }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {

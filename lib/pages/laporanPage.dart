@@ -122,7 +122,6 @@ class _LaporanPageState extends State<LaporanPage> {
               // 🔘 Horizontal Filter Buttons
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
                   vertical: 10,
                 ),
                 child: SingleChildScrollView(
@@ -403,9 +402,16 @@ class _LaporanPageState extends State<LaporanPage> {
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          'Ciri Pembeli : \n${(ciripembeli == null || ciripembeli.toString().trim().isEmpty) ? "-" : ciripembeli}',
+                                          'Ciri Pembeli :',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+
+                                        Text(
+                                          '${(ciripembeli == null || ciripembeli.toString().trim().isEmpty) ? "-" : ciripembeli}',
                                           style: GoogleFonts.jockeyOne(
-                                            fontSize: 14,
+                                            fontSize: 16,
                                           ),
                                         ),
 
@@ -414,8 +420,8 @@ class _LaporanPageState extends State<LaporanPage> {
                                           DateFormat(
                                             'dd MMM yyyy, HH:mm',
                                           ).format(tanggal.toDate()),
-                                          style: const TextStyle(
-                                            color: Colors.black54,
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 16,
                                           ),
                                         ),
                                       ],
@@ -468,9 +474,9 @@ class _LaporanPageState extends State<LaporanPage> {
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     const SizedBox(height: 4),
-                                                    const Text(
+                                                     Text(
                                                       'Catatan:',
-                                                      style: TextStyle(
+                                                      style: GoogleFonts.roboto(
                                                         fontSize: 12,
                                                         color: Colors.black,
                                                       ),

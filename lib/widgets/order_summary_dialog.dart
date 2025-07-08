@@ -48,144 +48,152 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BackdropFilter(
+Widget build(BuildContext context) {
+  return GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onTap: () {
+      FocusScope.of(context).unfocus(); // Untuk menutup keyboard jika tap di luar
+    },
+    child: BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
+        insetPadding: const EdgeInsets.all(16), // agar tidak menabrak layar
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: const Color(0xFFFDEBD0),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Text(
-                    'KETERANGAN PESANAN',
+        child: Material( // Tambahkan Material agar text selection bekerja
+          color: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(), // cegah overscroll
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      'KETERANGAN PESANAN',
+                      style: GoogleFonts.jockeyOne(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ...widget.selectedItems.map((item) {
+                    final parts = item.split(':');
+                    final name = parts[0];
+                    final qty = parts[1].trim();
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  name.toUpperCase(),
+                                  style: GoogleFonts.jockeyOne(fontSize: 16),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  qty,
+                                  textAlign: TextAlign.right,
+                                  style: GoogleFonts.jockeyOne(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _controllers[name],
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            decoration: InputDecoration(
+                              hintText: 'Tambahkan catatan...',
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 8,
+                                horizontal: 12,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade400,
+                                ),
+                              ),
+                            ),
+                            onChanged: (val) {
+                              widget.onNoteSaved(name, val);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Ciri-ciri Pembeli:',
                     style: GoogleFonts.jockeyOne(
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                ...widget.selectedItems.map((item) {
-                  final parts = item.split(':');
-                  final name = parts[0];
-                  final qty = parts[1].trim();
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                name.toUpperCase(),
-                                style: GoogleFonts.jockeyOne(fontSize: 16),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                qty,
-                                textAlign: TextAlign.right,
-                                style: GoogleFonts.jockeyOne(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: _controllers[name],
-                          onChanged: (val) {
-                            widget.onNoteSaved(name, val);
-                          },
-                          keyboardType: TextInputType.multiline,
-                          maxLines:
-                              null, // memungkinkan multiline dan tombol enter
-                          decoration: InputDecoration(
-                            hintText: 'Tambahkan catatan...',
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 8,
-                              horizontal: 12,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade400,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-                const SizedBox(height: 20),
-
-                Text(
-                  'Ciri-ciri Pembeli:',
-                  style: GoogleFonts.jockeyOne(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                TextField(
-                  controller: buyerDescriptionController,
-                  maxLines: 2,
-                  decoration: InputDecoration(
-                    hintText:
-                        'Masukkan Ciri-ciri Pembeli',
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade400),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: showConfirmationDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 35,
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: buyerDescriptionController,
+                    maxLines: 2,
+                    decoration: InputDecoration(
+                      hintText: 'Masukkan Ciri-ciri Pembeli',
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.symmetric(
                         vertical: 10,
+                        horizontal: 12,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade400),
                       ),
-                      elevation: 6,
-                      shadowColor: Colors.black54,
-                    ),
-                    child: const Text(
-                      'Selesai',
-                      style: TextStyle(fontSize: 16),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: showConfirmationDialog,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 35,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 6,
+                        shadowColor: Colors.black54,
+                      ),
+                      child: const Text(
+                        'Selesai',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   void showConfirmationDialog() {
     showDialog(
