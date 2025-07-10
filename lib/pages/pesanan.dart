@@ -18,7 +18,7 @@ class _AntreanPageState extends State<AntreanPage> {
   @override
   void initState() {
     super.initState();
-    _refreshTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+    _refreshTimer = Timer.periodic(const Duration(minutes: 10), (timer) {
       if (mounted) {
         setState(() {});
       }
@@ -117,7 +117,12 @@ class _AntreanPageState extends State<AntreanPage> {
                     final pesananList = snapshot.data!.docs;
 
                     return ListView.builder(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.only(
+                        top: 16,
+                        left: 16,
+                        right: 16,
+                        bottom: 49,
+                      ),
                       itemCount: pesananList.length,
                       itemBuilder: (context, index) {
                         final data = pesananList[index];
@@ -435,7 +440,7 @@ class _AntreanPageState extends State<AntreanPage> {
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(30),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             ),
@@ -471,7 +476,7 @@ class _AntreanPageState extends State<AntreanPage> {
           ),
         ),
         content: const Text(
-          'Apakah Anda yakin ingin menghapus menu ini secara permanen?',
+          'Apakah Anda yakin ingin menghapus menu ini?',
           style: TextStyle(fontSize: 16, color: Colors.black87),
           textAlign: TextAlign.center,
         ),
@@ -486,7 +491,7 @@ class _AntreanPageState extends State<AntreanPage> {
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(30),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             ),
@@ -523,15 +528,35 @@ class _AntreanPageState extends State<AntreanPage> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFFFFEBD5),
-        title: Text('Edit Catatan: $name'),
+        title: Center(
+          child: Text('Edit Catatan\n $name', style: GoogleFonts.jockeyOne()),
+        ),
         content: TextField(
           controller: controller,
           maxLines: 3,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Masukkan catatan...',
+            hintStyle: const TextStyle(
+              color: Colors.grey,
+              fontStyle: FontStyle.italic,
+              fontSize: 14,
+            ),
             filled: true,
             fillColor: Colors.white,
-            border: OutlineInputBorder(),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 14,
+              horizontal: 20,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide(color: Colors.grey.shade300, width: 1.2),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: const BorderSide(color: Colors.green, width: 2),
+            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(24)),
+            // Shadow efek (gunakan hanya jika dibungkus container)
           ),
         ),
         actions: [
@@ -540,6 +565,14 @@ class _AntreanPageState extends State<AntreanPage> {
             child: const Text('Batal'),
           ),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            ),
             onPressed: () async {
               final newNote = controller.text.trim();
               final docRef = FirebaseFirestore.instance

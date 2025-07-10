@@ -93,23 +93,26 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: Text(
-                                  name.toUpperCase(),
-                                  style: GoogleFonts.jockeyOne(fontSize: 16),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    name.toUpperCase(),
+                                    style: GoogleFonts.jockeyOne(fontSize: 18),
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  qty,
-                                  textAlign: TextAlign.right,
-                                  style: GoogleFonts.jockeyOne(fontSize: 16),
+                                Expanded(
+                                  child: Text(
+                                    'X $qty',
+                                    textAlign: TextAlign.right,
+                                    style: GoogleFonts.jockeyOne(fontSize: 20),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 8),
                           TextField(
@@ -130,12 +133,36 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
                                   );
                             },
                             decoration: InputDecoration(
-                              hintText: 'Tambahkan catatan...',
+                              hintText: 'Masukkan catatan...',
+                              hintStyle: const TextStyle(
+                                color: Colors.grey,
+                                fontStyle: FontStyle.italic,
+                                fontSize: 14,
+                              ),
                               filled: true,
                               fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 14,
+                                horizontal: 20,
                               ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                  width: 1.2,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: const BorderSide(
+                                  color: Colors.green,
+                                  width: 2,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              // Shadow efek (gunakan hanya jika dibungkus container)
                             ),
                           ),
                         ],
@@ -168,17 +195,36 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
                           );
                     },
                     decoration: InputDecoration(
-                      hintText: 'Masukkan Ciri-ciri Pembeli',
+                      hintText: 'Masukkan catatan...',
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 14,
+                      ),
                       filled: true,
                       fillColor: Colors.white,
                       contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 12,
+                        vertical: 14,
+                        horizontal: 20,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.2,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        borderSide: const BorderSide(
+                          color: Colors.green,
+                          width: 2,
+                        ),
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(24),
                       ),
+                      // Shadow efek (gunakan hanya jika dibungkus container)
                     ),
                   ),
 
@@ -252,13 +298,29 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '$name x$qty',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                name,
+                                style: GoogleFonts.jockeyOne(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              'x $qty',
+                              style: GoogleFonts.jockeyOne(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ],
                         ),
+
                         if (note != null && note.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
