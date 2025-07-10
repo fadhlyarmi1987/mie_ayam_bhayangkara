@@ -138,7 +138,7 @@ class _AntreanPageState extends State<AntreanPage> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 10),
                           child: SwipeableCard(
-                            onDelete: () => _showKonfirmasiHapusDialog(docId),
+                            onDelete: () => _konfirmasiHapusMenu(docId),
                             child: _buildOrderCard(
                               nomor,
                               items,
@@ -414,7 +414,10 @@ class _AntreanPageState extends State<AntreanPage> {
         title: Center(
           child: const Text(
             'Konfirmasi',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ),
         ),
         content: const Text(
@@ -446,6 +449,67 @@ class _AntreanPageState extends State<AntreanPage> {
             },
 
             child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _konfirmasiHapusMenu(String docId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFFFFEBD5),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Center(
+          child: Text(
+            'Hapus Menu',
+            style: GoogleFonts.jockeyOne(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        content: const Text(
+          'Apakah Anda yakin ingin menghapus menu ini secara permanen?',
+          style: TextStyle(fontSize: 16, color: Colors.black87),
+          textAlign: TextAlign.center,
+        ),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Batal', style: TextStyle(color: Colors.red)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            ),
+            onPressed: () async {
+              try {
+                await FirebaseFirestore.instance
+                    .collection('pesanan')
+                    .doc(docId)
+                    .delete(); // 🔥 Hapus permanen dokumen ini
+
+                Navigator.of(context).pop();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Menu berhasil dihapus')),
+                );
+              } catch (e) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Gagal menghapus: $e')));
+              }
+            },
+            child: const Text('Hapus'),
           ),
         ],
       ),
@@ -511,7 +575,6 @@ class _AntreanPageState extends State<AntreanPage> {
       ),
     );
   }
-  
 }
 
 class SwipeableCard extends StatefulWidget {
@@ -562,10 +625,7 @@ class _SwipeableCardState extends State<SwipeableCard> {
               ),
             ),
           ),
-          Transform.translate(
-            offset: Offset(_offsetX, 0),
-            child: widget.child,
-          ),
+          Transform.translate(offset: Offset(_offsetX, 0), child: widget.child),
         ],
       ),
     );

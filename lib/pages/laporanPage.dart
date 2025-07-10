@@ -121,9 +121,7 @@ class _LaporanPageState extends State<LaporanPage> {
 
               // 🔘 Horizontal Filter Buttons
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -340,8 +338,8 @@ class _LaporanPageState extends State<LaporanPage> {
                     final docs = snapshot.data?.docs ?? [];
 
                     if (docs.isEmpty) {
-                      return const Center(
-                        child: Text('Tidak ada data pesanan.'),
+                      return  Center(
+                        child: Text('Tidak ada data pesanan.', style: GoogleFonts.jockeyOne()),
                       );
                     }
 
@@ -351,6 +349,7 @@ class _LaporanPageState extends State<LaporanPage> {
 
                     return Column(
                       children: [
+                        // 🔼 List Pesanan
                         Expanded(
                           child: ListView.builder(
                             padding: const EdgeInsets.all(16),
@@ -363,176 +362,42 @@ class _LaporanPageState extends State<LaporanPage> {
                               final ciripembeli = doc['ciri_pembeli'];
                               final tanggal = doc['tanggal'] as Timestamp;
 
-                              return Card(
-                                elevation: 6, // 👈 tambahkan shadow di sini
-                                shadowColor: const Color.fromARGB(
-                                  173,
-                                  0,
-                                  0,
-                                  0,
-                                ), // opsional, default: black
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                color: const Color(0xFFFFEBD5),
-                                margin: const EdgeInsets.only(bottom: 16),
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    dividerColor: Colors
-                                        .transparent, // Hilangkan garis default
-                                  ),
-                                  child: ExpansionTile(
-                                    tilePadding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                    ),
-                                    childrenPadding: const EdgeInsets.all(16),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    title: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Pesanan #$id',
-                                          style: GoogleFonts.jockeyOne(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Ciri Pembeli :',
-                                          style: GoogleFonts.roboto(
-                                            fontSize: 12,
-                                          ),
-                                        ),
-
-                                        Text(
-                                          '${(ciripembeli == null || ciripembeli.toString().trim().isEmpty) ? "-" : ciripembeli}',
-                                          style: GoogleFonts.jockeyOne(
-                                            fontSize: 16,
-                                          ),
-                                        ),
-
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          DateFormat(
-                                            'dd MMM yyyy, HH:mm',
-                                          ).format(tanggal.toDate()),
-                                          style: GoogleFonts.roboto(
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    children: [
-                                      const Divider(thickness: 1),
-                                      ...items.map((item) {
-                                        final nama = item['nama'];
-                                        final jumlah = item['jumlah'];
-                                        final catatan = item['catatan'];
-
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 2.0,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    nama,
-                                                    style:
-                                                        GoogleFonts.jockeyOne(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                  ),
-                                                  Text(
-                                                    'x $jumlah',
-                                                    style:
-                                                        GoogleFonts.jockeyOne(
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                  ),
-                                                ],
-                                              ),
-
-                                              if (catatan != null &&
-                                                  catatan.toString().isNotEmpty)
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const SizedBox(height: 4),
-                                                     Text(
-                                                      'Catatan:',
-                                                      style: GoogleFonts.roboto(
-                                                        fontSize: 12,
-                                                        color: Colors.black,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      catatan,
-                                                      style:
-                                                          GoogleFonts.jockeyOne(
-                                                            fontSize: 16,
-                                                          ),
-                                                    ),
-                                                  ],
-                                                ),
-                                            ],
-                                          ),
-                                        );
-                                      }).toList(),
-                                      const Divider(thickness: 1),
-                                      Text(
-                                        'Total Harga: Rp ${NumberFormat('#,###', 'id_ID').format(totalHarga)}',
-                                        style: GoogleFonts.jockeyOne(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.green,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              return _CustomExpansionCard(
+                                id: id,
+                                ciriPembeli: ciripembeli,
+                                tanggal: tanggal,
+                                items: items,
+                                totalHarga: totalHarga,
                               );
                             },
                           ),
                         ),
 
-                        // 💰 Total Pendapatan
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
+                        // 🔽 Total Pendapatan Paling Bawah
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 60),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
                             ),
-                          ),
-                          child: Text(
-                            'Total Pendapatan: Rp ${NumberFormat('#,###', 'id_ID').format(totalPendapatan)}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                            decoration: const BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                              ),
                             ),
-                            textAlign: TextAlign.center,
+                            child: Text(
+                              'Total Pendapatan: Rp ${NumberFormat('#,###', 'id_ID').format(docs.fold(0, (sum, doc) => sum + (doc['total_harga'] as int)))}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                       ],
@@ -547,3 +412,185 @@ class _LaporanPageState extends State<LaporanPage> {
     );
   }
 }
+
+class _CustomExpansionCard extends StatefulWidget {
+  final int id;
+  final String? ciriPembeli;
+  final Timestamp tanggal;
+  final List<dynamic> items;
+  final int totalHarga;
+
+  const _CustomExpansionCard({
+    required this.id,
+    required this.ciriPembeli,
+    required this.tanggal,
+    required this.items,
+    required this.totalHarga,
+  });
+
+  @override
+  State<_CustomExpansionCard> createState() => _CustomExpansionCardState();
+}
+
+class _CustomExpansionCardState extends State<_CustomExpansionCard>
+    with SingleTickerProviderStateMixin {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 6,
+      shadowColor: const Color.fromARGB(173, 0, 0, 0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: const Color(0xFFFFEBD5),
+      margin: const EdgeInsets.only(bottom: 16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _expanded = !_expanded;
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pesanan #${widget.id}',
+                            style: GoogleFonts.jockeyOne(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Ciri Pembeli:',
+                            style: GoogleFonts.roboto(fontSize: 12),
+                          ),
+                          Text(
+                            widget.ciriPembeli == null ||
+                                    widget.ciriPembeli!.trim().isEmpty
+                                ? "-"
+                                : widget.ciriPembeli!,
+                            style: GoogleFonts.jockeyOne(fontSize: 16),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            DateFormat('dd MMM yyyy, HH:mm')
+                                .format(widget.tanggal.toDate()),
+                            style: GoogleFonts.roboto(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TweenAnimationBuilder<double>(
+                      duration: const Duration(milliseconds: 300),
+                      tween: Tween<double>(
+                        begin: 0,
+                        end: _expanded ? 0.5 : 0.0,
+                      ),
+                      curve: Curves.easeInOutBack,
+                      builder: (context, value, child) => Transform.rotate(
+                        angle: value * 3.1416 * 2,
+                        child: const Icon(Icons.expand_more, size: 32),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 1000),
+              curve: Curves.elasticInOut,
+              child: ConstrainedBox(
+                constraints: _expanded
+                    ? const BoxConstraints()
+                    : const BoxConstraints(maxHeight: 0),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    children: [
+                      const Divider(thickness: 1),
+                      ...widget.items.map((item) {
+                        final nama = item['nama'];
+                        final jumlah = item['jumlah'];
+                        final catatan = item['catatan'];
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    nama,
+                                    style: GoogleFonts.jockeyOne(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    'x $jumlah',
+                                    style: GoogleFonts.jockeyOne(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (catatan != null &&
+                                  catatan.toString().isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Catatan:',
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  catatan,
+                                  style: GoogleFonts.jockeyOne(fontSize: 16),
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      const Divider(thickness: 1),
+                      Text(
+                        'Total Harga: Rp ${NumberFormat('#,###', 'id_ID').format(widget.totalHarga)}',
+                        style: GoogleFonts.jockeyOne(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

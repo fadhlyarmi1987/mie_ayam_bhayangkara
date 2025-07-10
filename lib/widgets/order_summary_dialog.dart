@@ -1,6 +1,7 @@
 // lib/widgets/order_summary_dialog.dart
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mie_ayam_bhayangkara/utils/item_data.dart';
@@ -290,6 +291,20 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
+                        final connectivityResult = await Connectivity()
+                            .checkConnectivity();
+                        final isOnline =
+                            connectivityResult != ConnectivityResult.none;
+
+                        if (!isOnline) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Tidak ada koneksi internet.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return; // ❌ Jangan kirim ke Firestore
+                        }
                         // Hitung items
                         List<Map<String, dynamic>> items = widget.selectedItems
                             .map((item) {
