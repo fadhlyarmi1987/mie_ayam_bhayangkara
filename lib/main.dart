@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ Tambahkan ini
 import 'package:flutter/material.dart';
-import 'package:mie_ayam_bhayangkara/pages/pesanan.dart';
 import 'control_page.dart';
 
 void main() async {

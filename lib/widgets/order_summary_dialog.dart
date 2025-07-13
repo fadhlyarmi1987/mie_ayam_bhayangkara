@@ -30,7 +30,6 @@ class _OrderSummaryDialogState extends State<OrderSummaryDialog> {
       TextEditingController();
   final TextEditingController menuDescriptionController =
       TextEditingController();
-  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {

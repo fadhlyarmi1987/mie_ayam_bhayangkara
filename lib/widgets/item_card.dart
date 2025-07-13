@@ -38,7 +38,7 @@ class ItemCard extends StatelessWidget {
                   _roundButton(
                     icon: Icons.remove,
                     onPressed: () => onRemove(name, items),
-                    backgroundColor: const Color.fromARGB(255, 255, 111, 100),
+                    backgroundColor: const Color.fromARGB(255, 255, 86, 74),
                   ),
                   const SizedBox(width: 8),
                   Text(

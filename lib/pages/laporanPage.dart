@@ -518,7 +518,7 @@ class _CustomExpansionCardState extends State<_CustomExpansionCard>
                               const SizedBox(width: 4),
                               Text(
                                 DateFormat(
-                                  'dd MMM yyyy, HH:mm',
+                                  'EEE, dd MMM yyyy, HH:mm',
                                 ).format(widget.tanggal.toDate()),
                                 style: GoogleFonts.roboto(
                                   fontSize: 12,

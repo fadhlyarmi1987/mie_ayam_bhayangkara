@@ -4,7 +4,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import 'package:mie_ayam_bhayangkara/pages/Dashboard.dart';
 import 'package:mie_ayam_bhayangkara/pages/laporanPage.dart';
-import 'package:mie_ayam_bhayangkara/pages/pesanan.dart';
+import 'package:mie_ayam_bhayangkara/pages/antrean_views.dart';
 
 class ControlPage extends StatefulWidget {
   final int initialIndex;
@@ -17,7 +17,6 @@ class ControlPage extends StatefulWidget {
 
 class _ControlPageState extends State<ControlPage> {
   late int _selectedIndex;
-  bool _isOffline = false;
   bool _wasOffline = false;
   String? _bottomMessage;
   bool _showNotification = false;
@@ -25,7 +24,7 @@ class _ControlPageState extends State<ControlPage> {
 
   final List<Widget> _pages = const [
     DashboardCard(),
-    AntreanPage(),
+    AntreanView(),
     LaporanPage(),
   ];
 
