@@ -17,6 +17,7 @@ class ControlPage extends StatefulWidget {
 
 class _ControlPageState extends State<ControlPage> {
   late int _selectedIndex;
+  bool _isOffline = false;
   bool _wasOffline = false;
   String? _bottomMessage;
   bool _showNotification = false;
@@ -24,7 +25,7 @@ class _ControlPageState extends State<ControlPage> {
 
   final List<Widget> _pages = const [
     DashboardCard(),
-    AntreanView(),
+    AntreanPage(),
     LaporanPage(),
   ];
 
